@@ -2,6 +2,7 @@
 
 #check before sniffing
 #echo 1 > /proc/sys/net/ipv4/ip_forward
+#for https:-iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port 10000
 
 import scapy.all as scapy
 from scapy.layers import http

