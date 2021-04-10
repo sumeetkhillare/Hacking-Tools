@@ -33,12 +33,20 @@ def get_current_mac(interface):
         print("Could not read mac")
 
 
-options = get_arguments()
-cur_mac = get_current_mac(options.interface)
-print("Current MAC: " + str(cur_mac))
-change_mac(options.interface, options.new_mac)
-cur_mac = get_current_mac(options.interface)
-if cur_mac==options.new_mac:
-    print("Changed Successfully")
-else:
-    print("error")
+
+def main():
+    print("Use sudo if you got any error!!!")
+    options = get_arguments()
+    cur_mac = get_current_mac(options.interface)
+    print("Current MAC: " + str(cur_mac))
+    change_mac(options.interface, options.new_mac)
+    cur_mac = get_current_mac(options.interface)
+
+    if cur_mac==options.new_mac:
+        print("Changed Successfully")
+    else:
+        print("error")
+
+
+if __name__ == "__main__":
+    main()
