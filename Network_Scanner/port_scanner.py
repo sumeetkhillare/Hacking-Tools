@@ -1,10 +1,13 @@
-'''
-## uncomment this if don't have nmap installed
-import os
-os.system('pip3 install python-nmap')
-'''
-
-import nmap
+try:
+    import nmap
+except:
+    import os
+    exit_code = os.system('pip3 install python-nmap')
+    if (exit_code is not 0):
+        print('Error running pip3 most probably due to, pip3 command not found')
+    else:
+        print('Successfully installed python-nmap')
+        import nmap
 
 ps = nmap.PortScanner()
 
